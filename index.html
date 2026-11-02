@@ -1,109 +1,292 @@
-<!DOCTYPE html>
-<html lang="vi">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2048 Idol Edition</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-        html, body {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background: #faf8ef;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            touch-action: none;
-            overscroll-behavior: none;
-        }
-        .container {
-            width: 100%;
-            max-width: 500px;
-            height: 100%;
-            margin: 0 auto;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .header {
-            text-align: center;
-            width: 100%;
-            margin-top: 10px;
-        }
-        h1 {
-            color: #776e65;
-            margin: 0 0 10px 0;
-            font-size: 28px;
-        }
-        .score-container {
-            background: #bbada0;
-            color: white;
-            padding: 8px 25px;
-            border-radius: 8px;
-            display: inline-block;
-            font-weight: bold;
-            font-size: 18px;
-        }
-        .grid-wrapper {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-grow: 1;
-        }
-        .grid {
-            width: 92vw;
-            height: 92vw;
-            max-width: 420px;
-            max-height: 420px;
-            background: #bbada0;
-            border-radius: 10px;
-            padding: 12px;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(4, 1fr);
-            gap: 12px;
-            touch-action: none;
-        }
-        .cell {
-            background: rgba(238, 228, 218, 0.35);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: #776e65;
-            position: relative;
-            overflow: hidden;
-        }
-        .cell img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 6px;
-            display: block;
-        }
-        .footer {
-            margin-bottom: 15px;
-            text-align: center;
-            color: #776e65;
-            font-size: 13px;
-            line-height: 1.4;
-        }
-    </style>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2487.7">
+  <style type="text/css">
+    body {background-color: #f9f7eb}
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Helvetica Neue'; -webkit-text-stroke: #000000}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Helvetica Neue'; -webkit-text-stroke: #000000; min-height: 15.0px}
+    span.s1 {font-kerning: none}
+  </style>
 </head>
 <body>
-
-    <div class="container">
-        <div class="header">
-            <h1>2048: Phiên bản Idol</h1>
-            <div class="score-
+<p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
+<p class="p1"><span class="s1">&lt;html lang="vi"&gt;</span></p>
+<p class="p1"><span class="s1">&lt;head&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;title&gt;2048 Idol Edition&lt;/title&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;style&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>* {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>box-sizing: border-box;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin: 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>-webkit-touch-callout: none;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>-webkit-user-select: none;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>user-select: none;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>html, body {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: 100dvh;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: #faf8ef;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>overflow: hidden;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>touch-action: none;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>overscroll-behavior: none;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.container {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: 100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>flex-direction: column;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>justify-content: space-between;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>align-items: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 20px 10px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.header {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>text-align: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>h1 {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #776e65;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 24px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-bottom: 6px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.score-container {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: #bbada0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: white;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 6px 20px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 6px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: bold;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 16px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: inline-block;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.grid {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 88vw;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: 88vw;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>max-width: 380px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>max-height: 380px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: #bbada0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 10px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 10px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: grid;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>grid-template-columns: repeat(4, 1fr);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>grid-template-rows: repeat(4, 1fr);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>gap: 10px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin: auto;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.cell {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: rgba(238, 228, 218, 0.35);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 6px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>align-items: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>justify-content: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 22px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: bold;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #776e65;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>overflow: hidden;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.cell img {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: 100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>object-fit: cover;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 6px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.footer {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>text-align: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: #776e65;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 12px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding-bottom: 10px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/head&gt;</span></p>
+<p class="p1"><span class="s1">&lt;body&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="container"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="header"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;h1&gt;2048: Phiên bản Idol&lt;/h1&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="score-container"&gt;Điểm: &lt;span id="score"&gt;0&lt;/span&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="grid" id="grid"&gt;&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="footer"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>Vuốt màn hình để chơi!</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const gridDisplay = document.getElementById('grid');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const scoreDisplay = document.getElementById('score');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>let squares = [];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>let score = 0;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const idolImages = {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>2: ['2.jpg', '2.JPG'],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>4: ['4.jpg', '4.JPG'],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>8: ['8.jpg', '8.JPG'],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>16: ['16.jpg', '16.JPG'],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>32: ['32.jpg', '32.JPG'],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>64: ['64.jpg', '64.JPG'],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>128: ['128.jpg', '128.JPG'],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>256: ['256.jpg', '256.JPG'],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>512: ['512.jpg', '512.JPG'],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>1024: ['1024.jpg', '1024.JPG'],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>2048: ['2048.jpg', '2048.JPG']</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function createBoard() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>gridDisplay.innerHTML = '';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>squares = [];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>for (let i = 0; i &lt; 16; i++) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>let square = document.createElement('div');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>square.classList.add('cell');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>gridDisplay.appendChild(square);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>squares.push(square);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>generate();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>generate();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>updateBoard();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function generate() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>let emptySquares = squares.filter(sq =&gt; !sq.dataset.value);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (emptySquares.length &gt; 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>let randomSquare = emptySquares[Math.floor(Math.random() * emptySquares.length)];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>randomSquare.dataset.value = Math.random() &gt; 0.1 ? 2 : 4;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>updateBoard();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function updateBoard() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>squares.forEach(sq =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>let val = sq.dataset.value;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>sq.innerHTML = '';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (val) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (idolImages[val]) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>let img = document.createElement('img');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>img.src = idolImages[val][0];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>img.onerror = function() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>if (idolImages[val][1]) this.src = idolImages[val][1];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>else { this.style.display = 'none'; sq.innerText = val; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>sq.appendChild(img);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>sq.innerHTML = val;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>scoreDisplay.innerHTML = score;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function slide(row) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>let arr = row.filter(val =&gt; val);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>let missing = 4 - arr.length;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>return arr.concat(Array(missing).fill(0));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function combine(row) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>for (let i = 0; i &lt; 3; i++) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (row[i] === row[i + 1] &amp;&amp; row[i] !== 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>row[i] *= 2;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>score += row[i];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>row[i + 1] = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>return row;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function moveLeft() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>let changed = false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>for (let i = 0; i &lt; 16; i += 4) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>let row = [parseInt(squares[i].dataset.value)||0, parseInt(squares[i+1].dataset.value)||0, parseInt(squares[i+2].dataset.value)||0, parseInt(squares[i+3].dataset.value)||0];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>let original = [...row];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>let res = slide(combine(slide(row)));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>for (let j = 0; j &lt; 4; j++) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (res[j] !== 0) squares[i+j].dataset.value = res[j];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>else delete squares[i+j].dataset.value;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (res[j] !== original[j]) changed = true;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (changed) generate();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function moveRight() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>let changed = false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>for (let i = 0; i &lt; 16; i += 4) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>let row = [parseInt(squares[i].dataset.value)||0, parseInt(squares[i+1].dataset.value)||0, parseInt(squares[i+2].dataset.value)||0, parseInt(squares[i+3].dataset.value)||0];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>let original = [...row];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>let res = slide(combine(slide([...row].reverse()))).reverse();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>for (let j = 0; j &lt; 4; j++) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (res[j] !== 0) squares[i+j].dataset.value = res[j];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>else delete squares[i+j].dataset.value;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (res[j] !== original[j]) changed = true;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (changed) generate();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function moveUp() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>let changed = false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>for (let i = 0; i &lt; 4; i++) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>let col = [parseInt(squares[i].dataset.value)||0, parseInt(squares[i+4].dataset.value)||0, parseInt(squares[i+8].dataset.value)||0, parseInt(squares[i+12].dataset.value)||0];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>let original = [...col];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>let res = slide(combine(slide(col)));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>for (let j = 0; j &lt; 4; j++) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>let idx = i + j * 4;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (res[j] !== 0) squares[idx].dataset.value = res[j];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>else delete squares[idx].dataset.value;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (res[j] !== original[j]) changed = true;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (changed) generate();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function moveDown() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>let changed = false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>for (let i = 0; i &lt; 4; i++) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>let col = [parseInt(squares[i].dataset.value)||0, parseInt(squares[i+4].dataset.value)||0, parseInt(squares[i+8].dataset.value)||0, parseInt(squares[i+12].dataset.value)||0];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>let original = [...col];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>let res = slide(combine(slide([...col].reverse()))).reverse();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>for (let j = 0; j &lt; 4; j++) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>let idx = i + j * 4;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (res[j] !== 0) squares[idx].dataset.value = res[j];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>else delete squares[idx].dataset.value;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (res[j] !== original[j]) changed = true;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (changed) generate();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Bắt sự kiện vuốt cảm ứng trên điện thoại</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>let startX = 0, startY = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>document.addEventListener('touchstart', e =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>startX = e.touches[0].clientX;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>startY = e.touches[0].clientY;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}, {passive: false});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>document.addEventListener('touchmove', e =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>e.preventDefault(); // Chặn đứng hoàn toàn việc cuộn trang</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}, {passive: false});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>document.addEventListener('touchend', e =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>let dx = e.changedTouches[0].clientX - startX;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>let dy = e.changedTouches[0].clientY - startY;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (Math.max(Math.abs(dx), Math.abs(dy)) &gt; 25) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (Math.abs(dx) &gt; Math.abs(dy)) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (dx &gt; 0) moveRight(); else moveLeft();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (dy &gt; 0) moveDown(); else moveUp();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}, {passive: false});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>createBoard();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
+</body>
+</html>
