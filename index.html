@@ -80,13 +80,14 @@
             currentFruit = {
                 x: WIDTH / 2,
                 y: 40,
+                vx: 0,
+                vy: 0,
                 radius: FRUITS[level].radius,
                 level: level,
                 isDropped: false
             };
         }
 
-        // Theo dõi ngón tay/chuột di chuyển mượt mà trên toàn màn hình canvas
         function handleMove(clientX) {
             if (!currentFruit || currentFruit.isDropped || dropCooldown) return;
             let rect = canvas.getBoundingClientRect();
@@ -102,7 +103,6 @@
             handleMove(e.clientX);
         });
 
-        // Thả quả ngay tại vị trí chạm tay/click chuột
         canvas.addEventListener("pointerdown", (e) => {
             handleMove(e.clientX);
             if (!currentFruit || currentFruit.isDropped || dropCooldown) return;
@@ -119,30 +119,79 @@
         function update() {
             if (gameOver) return;
 
+            const gravity = 0.3;
+            const friction = 0.98;
+            const bounce = 0.4; // Độ nảy đàn hồi
+
+            // Cập nhật vị trí và lực cho các quả
             for (let i = 0; i < circles.length; i++) {
                 let c = circles[i];
                 if (c.isDropped) {
-                    c.y += 4;
+                    c.vy += gravity;
+                    c.vx *= friction;
+                    c.vy *= friction;
+                    c.x += c.vx;
+                    c.y += c.vy;
+
+                    // Va chạm cạnh trái / phải
+                    if (c.x - c.radius < 0) {
+                        c.x = c.radius;
+                        c.vx = -c.vx * bounce;
+                    }
+                    if (c.x + c.radius > WIDTH) {
+                        c.x = WIDTH - c.radius;
+                        c.vx = -c.vx * bounce;
+                    }
+
+                    // Va chạm đáy khung game (tạo hiệu ứng nảy nhẹ khi chạm đất)
                     if (c.y + c.radius > HEIGHT) {
                         c.y = HEIGHT - c.radius;
+                        c.vy = -c.vy * bounce;
+                        c.vx *= 0.8;
                     }
                 }
             }
 
+            // Xử lý va chạm giữa các quả với nhau (hiệu ứng nảy và đẩy nhau rung lắc)
             for (let i = 0; i < circles.length; i++) {
                 for (let j = i + 1; j < circles.length; j++) {
                     let c1 = circles[i];
                     let c2 = circles[j];
-                    let dist = Math.hypot(c1.x - c2.x, c1.y - c2.y);
-                    if (dist < c1.radius + c2.radius && c1.level === c2.level) {
-                        let newLevel = c1.level + 1;
-                        if (newLevel < FRUITS.length) {
-                            c1.radius = FRUITS[newLevel].radius;
-                            c1.level = newLevel;
-                            score += (newLevel * 10);
-                            scoreEl.innerText = score;
-                            circles.splice(j, 1);
-                            break;
+                    let dx = c2.x - c1.x;
+                    let dy = c2.y - c1.y;
+                    let dist = Math.hypot(dx, dy);
+                    let minDist = c1.radius + c2.radius;
+
+                    if (dist < minDist) {
+                        // Kiểm tra nếu cùng cấp thì gộp lại thành cấp cao hơn
+                        if (c1.level === c2.level) {
+                            let newLevel = c1.level + 1;
+                            if (newLevel < FRUITS.length) {
+                                c1.radius = FRUITS[newLevel].radius;
+                                c1.level = newLevel;
+                                score += (newLevel * 10);
+                                scoreEl.innerText = score;
+                                circles.splice(j, 1);
+                                break;
+                            }
+                        } else {
+                            // Đẩy nhau ra và tạo lực rung lắc khi va chạm
+                            let overlap = minDist - dist;
+                            let angle = Math.atan2(dy, dx);
+                            let correctionX = Math.cos(angle) * overlap * 0.5;
+                            let correctionY = Math.sin(angle) * overlap * 0.5;
+
+                            c1.x -= correctionX;
+                            c1.y -= correctionY;
+                            c2.x += correctionX;
+                            c2.y += correctionY;
+
+                            let tempVx = c1.vx;
+                            let tempVy = c1.vy;
+                            c1.vx = c2.vx * 0.5;
+                            c1.vy = c2.vy * 0.5;
+                            c2.vx = tempVx * 0.5;
+                            c2.vy = tempVy * 0.5;
                         }
                     }
                 }
@@ -152,6 +201,7 @@
         function draw() {
             ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
+            // Vạch giới hạn
             ctx.strokeStyle = "#ff4d4d";
             ctx.setLineDash([4, 4]);
             ctx.beginPath();
@@ -160,6 +210,7 @@
             ctx.stroke();
             ctx.setLineDash([]);
 
+            // Vẽ các quả đã thả
             for (let c of circles) {
                 ctx.save();
                 ctx.beginPath();
@@ -182,6 +233,7 @@
                 ctx.stroke();
             }
 
+            // Vẽ quả đang chuẩn bị thả
             if (currentFruit && !currentFruit.isDropped) {
                 ctx.save();
                 ctx.beginPath();
