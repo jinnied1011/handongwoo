@@ -45,8 +45,6 @@
         let score = 0;
         let gameOver = false;
 
-        // Định nghĩa 8 cấp độ trái cây/idol tương ứng với bán kính và tên file ảnh
-        // (Bạn có thể đổi tên file ảnh trong mảng 'img' cho khớp với tên file bạn đã tải lên GitHub)
         const FRUITS = [
             { radius: 18, imgFiles: ["2.jpg", "2.JPG"] },
             { radius: 25, imgFiles: ["4.jpg", "4.JPG"] },
@@ -58,7 +56,6 @@
             { radius: 95, imgFiles: ["256.jpg", "256.JPG"] }
         ];
 
-        // Tải trước các hình ảnh idol
         let loadedImages = [];
         FRUITS.forEach((fruit, index) => {
             let img = new Image();
@@ -79,7 +76,7 @@
 
         function spawnFruit() {
             if (gameOver) return;
-            let level = Math.floor(Math.random() * 3); // Tạo các quả nhỏ từ cấp 0 đến 2
+            let level = Math.floor(Math.random() * 3);
             currentFruit = {
                 x: WIDTH / 2,
                 y: 40,
@@ -89,17 +86,25 @@
             };
         }
 
-        canvas.addEventListener("pointermove", (e) => {
+        // Theo dõi ngón tay/chuột di chuyển mượt mà trên toàn màn hình canvas
+        function handleMove(clientX) {
             if (!currentFruit || currentFruit.isDropped || dropCooldown) return;
             let rect = canvas.getBoundingClientRect();
-            let x = e.clientX - rect.left;
+            let scaleX = WIDTH / rect.width;
+            let x = (clientX - rect.left) * scaleX;
             let r = currentFruit.radius;
             if (x < r) x = r;
             if (x > WIDTH - r) x = WIDTH - r;
             currentFruit.x = x;
+        }
+
+        canvas.addEventListener("pointermove", (e) => {
+            handleMove(e.clientX);
         });
 
+        // Thả quả ngay tại vị trí chạm tay/click chuột
         canvas.addEventListener("pointerdown", (e) => {
+            handleMove(e.clientX);
             if (!currentFruit || currentFruit.isDropped || dropCooldown) return;
             currentFruit.isDropped = true;
             circles.push(currentFruit);
@@ -117,14 +122,13 @@
             for (let i = 0; i < circles.length; i++) {
                 let c = circles[i];
                 if (c.isDropped) {
-                    c.y += 4; // Tốc độ rơi xuống
+                    c.y += 4;
                     if (c.y + c.radius > HEIGHT) {
                         c.y = HEIGHT - c.radius;
                     }
                 }
             }
 
-            // Kiểm tra va chạm để hợp nhất 2 quả cùng cấp
             for (let i = 0; i < circles.length; i++) {
                 for (let j = i + 1; j < circles.length; j++) {
                     let c1 = circles[i];
@@ -148,7 +152,6 @@
         function draw() {
             ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
-            // Vẽ vạch giới hạn phía trên
             ctx.strokeStyle = "#ff4d4d";
             ctx.setLineDash([4, 4]);
             ctx.beginPath();
@@ -157,7 +160,6 @@
             ctx.stroke();
             ctx.setLineDash([]);
 
-            // Vẽ các quả đã thả (dạng ảnh tròn)
             for (let c of circles) {
                 ctx.save();
                 ctx.beginPath();
@@ -171,10 +173,8 @@
                     ctx.fillStyle = "#ddd";
                     ctx.fill();
                 }
-                
                 ctx.restore();
 
-                // Viền ngoài cho đẹp
                 ctx.beginPath();
                 ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2);
                 ctx.strokeStyle = "#fff";
@@ -182,7 +182,6 @@
                 ctx.stroke();
             }
 
-            // Vẽ quả đang chuẩn bị thả
             if (currentFruit && !currentFruit.isDropped) {
                 ctx.save();
                 ctx.beginPath();
@@ -196,7 +195,6 @@
                     ctx.fillStyle = "#ddd";
                     ctx.fill();
                 }
-
                 ctx.restore();
 
                 ctx.beginPath();
