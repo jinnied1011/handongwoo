@@ -3,301 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>2048 Idol Edition</title>
+    <title>Game Dưa Hấu Idol</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         html, body {
-            width: 100%;
-            height: 100%;
-            background: #faf8ef;
+            width: 100%; height: 100%;
+            background: #f7f4ec;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             overflow: hidden;
-            touch-action: none;
-        }
-        .container {
-            width: 100%;
-            height: 100vh;
-            height: 100dvh;
             display: flex;
             flex-direction: column;
-            justify-content: space-around;
-            align-items: center;
-            padding: 10px;
-        }
-        .header {
-            text-align: center;
-        }
-        h1 {
-            color: #776e65;
-            font-size: 26px;
-            margin-bottom: 6px;
-        }
-        .score-container {
-            background: #bbada0;
-            color: white;
-            padding: 6px 20px;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 16px;
-            display: inline-block;
-        }
-        .grid {
-            width: 88vw;
-            height: 88vw;
-            max-width: 380px;
-            max-height: 380px;
-            background: #bbada0;
-            border-radius: 10px;
-            padding: 10px;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(4, 1fr);
-            gap: 10px;
-        }
-        .cell {
-            background: rgba(238, 228, 218, 0.35);
-            border-radius: 6px;
-            display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
-            font-weight: bold;
-            color: #776e65;
-            overflow: hidden;
-            position: relative;
         }
-        .cell img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 6px;
-            display: block;
-        }
-        .footer {
-            text-align: center;
-            color: #776e65;
-            font-size: 13px;
+        h1 { color: #555; font-size: 22px; margin-bottom: 5px; }
+        .score-box { font-size: 16px; color: #777; margin-bottom: 10px; font-weight: bold; }
+        canvas {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            touch-action: none;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="header">
-            <h1>2048: Phiên bản Idol</h1>
-            <div class="score-container">Điểm: <span id="score">0</span></div>
-        </div>
-
-        <div class="grid" id="grid"></div>
-
-        <div class="footer">
-            Vuốt màn hình để ghép ảnh idol!
-        </div>
-    </div>
+    <h1>🍉 Game Dưa Hấu Idol 🍉</h1>
+    <div class="score-box">Điểm: <span id="score">0</span></div>
+    <canvas id="gameCanvas"></canvas>
 
     <script>
-        var gridDisplay = document.getElementById('grid');
-        var scoreDisplay = document.getElementById('score');
-        var squares = [];
-        var score = 0;
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const scoreEl = document.getElementById("score");
 
-        var idolImages = {
-            2: ['2.jpg', '2.JPG'],
-            4: ['4.jpg', '4.JPG'],
-            8: ['8.jpg', '8.JPG'],
-            16: ['16.jpg', '16.JPG'],
-            32: ['32.jpg', '32.JPG'],
-            64: ['64.jpg', '64.JPG'],
-            128: ['128.jpg', '128.JPG'],
-            256: ['256.jpg', '256.JPG'],
-            512: ['512.jpg', '512.JPG'],
-            1024: ['1024.jpg', '1024.JPG'],
-            2048: ['2048.jpg', '2048.JPG']
-        };
+        // Thiết lập kích thước khung game phù hợp màn hình điện thoại
+        const WIDTH = 360;
+        const HEIGHT = 520;
+        canvas.width = WIDTH;
+        canvas.height = HEIGHT;
 
-        function createBoard() {
-            gridDisplay.innerHTML = '';
-            squares = [];
-            for (var i = 0; i < 16; i++) {
-                var square = document.createElement('div');
-                square.classList.add('cell');
-                gridDisplay.appendChild(square);
-                squares.push(square);
-            }
-            generate();
-            generate();
-            updateBoard();
+        let score = 0;
+        let gameOver = false;
+
+        // Định nghĩa các cấp độ trái cây / idol (Bán kính và tên)
+        const FRUITS = [
+            { radius: 15, color: "#ff4d4d", name: "Level 1" },
+            { radius: 22, color: "#ffa500", name: "Level 2" },
+            { radius: 30, color: "#ffd700", name: "Level 3" },
+            { radius: 40, color: "#9acd32", name: "Level 4" },
+            { radius: 50, color: "#20b2aa", name: "Level 5" },
+            { radius: 62, color: "#1e90ff", name: "Level 6" },
+            { radius: 75, color: "#9370db", name: "Level 7" },
+            { radius: 90, color: "#ff1493", name: "Level 8" }
+        ];
+
+        let circles = [];
+        let currentFruit = null;
+        let dropCooldown = false;
+
+        function spawnFruit() {
+            if (gameOver) return;
+            let level = Math.floor(Math.random() * 3); // Ra các quả nhỏ từ 0 đến 2
+            currentFruit = {
+                x: WIDTH / 2,
+                y: 50,
+                radius: FRUITS[level].radius,
+                level: level,
+                color: FRUITS[level].color,
+                isDropped: false
+            };
         }
 
-        function generate() {
-            var emptySquares = [];
-            for (var i = 0; i < squares.length; i++) {
-                if (!squares[i].getAttribute('data-value')) {
-                    emptySquares.push(squares[i]);
-                }
-            }
-            if (emptySquares.length > 0) {
-                var randomSquare = emptySquares[Math.floor(Math.random() * emptySquares.length)];
-                randomSquare.setAttribute('data-value', Math.random() > 0.1 ? 2 : 4);
-                updateBoard();
-            }
-        }
+        // Điều khiển thả quả khi chạm màn hình điện thoại hoặc click chuột
+        canvas.addEventListener("pointermove", (e) => {
+            if (!currentFruit || currentFruit.isDropped || dropCooldown) return;
+            let rect = canvas.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let r = currentFruit.radius;
+            if (x < r) x = r;
+            if (x > WIDTH - r) x = WIDTH - r;
+            currentFruit.x = x;
+        });
 
-        function updateBoard() {
-            for (var i = 0; i < squares.length; i++) {
-                var sq = squares[i];
-                var val = sq.getAttribute('data-value');
-                sq.innerHTML = '';
-                if (val && val > 0) {
-                    if (idolImages[val]) {
-                        var img = document.createElement('img');
-                        img.src = idolImages[val][0];
-                        img.onerror = function() {
-                            this.onerror = null;
-                            this.src = this.src.endsWith('.jpg') ? this.src.replace('.jpg', '.JPG') : this.src.replace('.JPG', '.jpg');
-                        };
-                        sq.appendChild(img);
-                    } else {
-                        sq.innerText = val;
+        canvas.addEventListener("pointerdown", (e) => {
+            if (!currentFruit || currentFruit.isDropped || dropCooldown) return;
+            currentFruit.isDropped = true;
+            circles.push(currentFruit);
+            currentFruit = null;
+            dropCooldown = true;
+            setTimeout(() => {
+                dropCooldown = false;
+                spawnFruit();
+            }, 500);
+        });
+
+        function update() {
+            if (gameOver) return;
+
+            // Di chuyển các quả rơi xuống và va chạm đơn giản
+            for (let i = 0; i < circles.length; i++) {
+                let c = circles[i];
+                if (c.isDropped) {
+                    c.y += 4; // Tốc độ rơi
+                    // Chạm đáy
+                    if (c.y + c.radius > HEIGHT) {
+                        c.y = HEIGHT - c.radius;
                     }
                 }
             }
-            scoreDisplay.innerHTML = score;
-        }
 
-        function slide(row) {
-            var arr = [];
-            for (var i = 0; i < row.length; i++) {
-                if (row[i] !== 0) arr.push(row[i]);
-            }
-            while (arr.length < 4) {
-                arr.push(0);
-            }
-            return arr;
-        }
-
-        function combine(row) {
-            for (var i = 0; i < 3; i++) {
-                if (row[i] === row[i + 1] && row[i] !== 0) {
-                    row[i] *= 2;
-                    score += row[i];
-                    row[i + 1] = 0;
+            // Kiểm tra va chạm nhập 2 quả cùng cấp
+            for (let i = 0; i < circles.length; i++) {
+                for (let j = i + 1; j < circles.length; j++) {
+                    let c1 = circles[i];
+                    let c2 = circles[j];
+                    let dist = Math.hypot(c1.x - c2.x, c1.y - c2.y);
+                    if (dist < c1.radius + c2.radius && c1.level === c2.level) {
+                        let newLevel = c1.level + 1;
+                        if (newLevel < FRUITS.length) {
+                            c1.radius = FRUITS[newLevel].radius;
+                            c1.level = newLevel;
+                            c1.color = FRUITS[newLevel].color;
+                            score += (newLevel * 10);
+                            scoreEl.innerText = score;
+                            circles.splice(j, 1);
+                            break;
+                        }
+                    }
                 }
             }
-            return row;
         }
 
-        function getValue(idx) {
-            var val = squares[idx].getAttribute('data-value');
-            return val ? parseInt(val) : 0;
-        }
+        function draw() {
+            ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
-        function setValue(idx, val) {
-            if (val && val > 0) {
-                squares[idx].setAttribute('data-value', val);
-            } else {
-                squares[idx].removeAttribute('data-value');
+            // Vẽ vạch giới hạn phía trên
+            ctx.strokeStyle = "#ff4d4d";
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(0, 80);
+            ctx.lineTo(WIDTH, 80);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Vẽ các quả đã thả
+            for (let c of circles) {
+                ctx.beginPath();
+                ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2);
+                ctx.fillStyle = c.color;
+                ctx.fill();
+                ctx.strokeStyle = "#333";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.closePath();
+            }
+
+            // Vẽ quả đang chuẩn bị thả ở trên cùng
+            if (currentFruit && !currentFruit.isDropped) {
+                ctx.beginPath();
+                ctx.arc(currentFruit.x, currentFruit.y, currentFruit.radius, 0, Math.PI * 2);
+                ctx.fillStyle = currentFruit.color;
+                ctx.fill();
+                ctx.strokeStyle = "#333";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.closePath();
             }
         }
 
-        function moveLeft() {
-            var changed = false;
-            for (var i = 0; i < 16; i += 4) {
-                var row = [getValue(i), getValue(i+1), getValue(i+2), getValue(i+3)];
-                var original = row.slice();
-                var res = slide(combine(slide(row)));
-                for (var j = 0; j < 4; j++) {
-                    setValue(i + j, res[j]);
-                    if (res[j] !== original[j]) changed = true;
-                }
-            }
-            if (changed) generate();
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
         }
 
-        function moveRight() {
-            var changed = false;
-            for (var i = 0; i < 16; i += 4) {
-                var row = [getValue(i), getValue(i+1), getValue(i+2), getValue(i+3)];
-                var original = row.slice();
-                var reversed = row.slice().reverse();
-                var res = slide(combine(slide(reversed))).reverse();
-                for (var j = 0; j < 4; j++) {
-                    setValue(i + j, res[j]);
-                    if (res[j] !== original[j]) changed = true;
-                }
-            }
-            if (changed) generate();
-        }
-
-        function moveUp() {
-            var changed = false;
-            for (var i = 0; i < 4; i++) {
-                var col = [getValue(i), getValue(i+4), getValue(i+8), getValue(i+12)];
-                var original = col.slice();
-                var res = slide(combine(slide(col)));
-                for (var j = 0; j < 4; j++) {
-                    setValue(i + j * 4, res[j]);
-                    if (res[j] !== original[j]) changed = true;
-                }
-            }
-            if (changed) generate();
-        }
-
-        function moveDown() {
-            var changed = false;
-            for (var i = 0; i < 4; i++) {
-                var col = [getValue(i), getValue(i+4), getValue(i+8), getValue(i+12)];
-                var original = col.slice();
-                var reversed = col.slice().reverse();
-                var res = slide(combine(slide(reversed))).reverse();
-                for (var j = 0; j < 4; j++) {
-                    setValue(i + j * 4, res[j]);
-                    if (res[j] !== original[j]) changed = true;
-                }
-            }
-            if (changed) generate();
-        }
-
-        // Bắt sự kiện bàn phím cho Máy tính
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'ArrowLeft') { e.preventDefault(); moveLeft(); }
-            else if (e.key === 'ArrowRight') { e.preventDefault(); moveRight(); }
-            else if (e.key === 'ArrowUp') { e.preventDefault(); moveUp(); }
-            else if (e.key === 'ArrowDown') { e.preventDefault(); moveDown(); }
-        });
-
-        // Bắt sự kiện Vuốt cho Điện thoại
-        var startX = 0, startY = 0;
-
-        document.addEventListener('touchstart', function(e) {
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-        }, false);
-
-        document.addEventListener('touchmove', function(e) {
-            e.preventDefault();
-        }, { passive: false });
-
-        document.addEventListener('touchend', function(e) {
-            var dx = e.changedTouches[0].clientX - startX;
-            var dy = e.changedTouches[0].clientY - startY;
-            if (Math.max(Math.abs(dx), Math.abs(dy)) > 20) {
-                if (Math.abs(dx) > Math.abs(dy)) {
-                    if (dx > 0) moveRight(); else moveLeft();
-                } else {
-                    if (dy > 0) moveDown(); else moveUp();
-                }
-            }
-        }, false);
-
-        createBoard();
+        spawnFruit();
+        loop();
     </script>
 </body>
 </html>
