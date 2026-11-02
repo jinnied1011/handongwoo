@@ -37,7 +37,6 @@
         const ctx = canvas.getContext("2d");
         const scoreEl = document.getElementById("score");
 
-        // Thiết lập kích thước khung game phù hợp màn hình điện thoại
         const WIDTH = 360;
         const HEIGHT = 520;
         canvas.width = WIDTH;
@@ -46,17 +45,33 @@
         let score = 0;
         let gameOver = false;
 
-        // Định nghĩa các cấp độ trái cây / idol (Bán kính và tên)
+        // Định nghĩa 8 cấp độ trái cây/idol tương ứng với bán kính và tên file ảnh
+        // (Bạn có thể đổi tên file ảnh trong mảng 'img' cho khớp với tên file bạn đã tải lên GitHub)
         const FRUITS = [
-            { radius: 15, color: "#ff4d4d", name: "Level 1" },
-            { radius: 22, color: "#ffa500", name: "Level 2" },
-            { radius: 30, color: "#ffd700", name: "Level 3" },
-            { radius: 40, color: "#9acd32", name: "Level 4" },
-            { radius: 50, color: "#20b2aa", name: "Level 5" },
-            { radius: 62, color: "#1e90ff", name: "Level 6" },
-            { radius: 75, color: "#9370db", name: "Level 7" },
-            { radius: 90, color: "#ff1493", name: "Level 8" }
+            { radius: 18, imgFiles: ["2.jpg", "2.JPG"] },
+            { radius: 25, imgFiles: ["4.jpg", "4.JPG"] },
+            { radius: 33, imgFiles: ["8.jpg", "8.JPG"] },
+            { radius: 42, imgFiles: ["16.jpg", "16.JPG"] },
+            { radius: 52, imgFiles: ["32.jpg", "32.JPG"] },
+            { radius: 64, imgFiles: ["64.jpg", "64.JPG"] },
+            { radius: 78, imgFiles: ["128.jpg", "128.JPG"] },
+            { radius: 95, imgFiles: ["256.jpg", "256.JPG"] }
         ];
+
+        // Tải trước các hình ảnh idol
+        let loadedImages = [];
+        FRUITS.forEach((fruit, index) => {
+            let img = new Image();
+            let srcIndex = 0;
+            img.src = fruit.imgFiles[0];
+            img.onerror = function() {
+                srcIndex++;
+                if (srcIndex < fruit.imgFiles.length) {
+                    this.src = fruit.imgFiles[srcIndex];
+                }
+            };
+            loadedImages[index] = img;
+        });
 
         let circles = [];
         let currentFruit = null;
@@ -64,18 +79,16 @@
 
         function spawnFruit() {
             if (gameOver) return;
-            let level = Math.floor(Math.random() * 3); // Ra các quả nhỏ từ 0 đến 2
+            let level = Math.floor(Math.random() * 3); // Tạo các quả nhỏ từ cấp 0 đến 2
             currentFruit = {
                 x: WIDTH / 2,
-                y: 50,
+                y: 40,
                 radius: FRUITS[level].radius,
                 level: level,
-                color: FRUITS[level].color,
                 isDropped: false
             };
         }
 
-        // Điều khiển thả quả khi chạm màn hình điện thoại hoặc click chuột
         canvas.addEventListener("pointermove", (e) => {
             if (!currentFruit || currentFruit.isDropped || dropCooldown) return;
             let rect = canvas.getBoundingClientRect();
@@ -95,25 +108,23 @@
             setTimeout(() => {
                 dropCooldown = false;
                 spawnFruit();
-            }, 500);
+            }, 400);
         });
 
         function update() {
             if (gameOver) return;
 
-            // Di chuyển các quả rơi xuống và va chạm đơn giản
             for (let i = 0; i < circles.length; i++) {
                 let c = circles[i];
                 if (c.isDropped) {
-                    c.y += 4; // Tốc độ rơi
-                    // Chạm đáy
+                    c.y += 4; // Tốc độ rơi xuống
                     if (c.y + c.radius > HEIGHT) {
                         c.y = HEIGHT - c.radius;
                     }
                 }
             }
 
-            // Kiểm tra va chạm nhập 2 quả cùng cấp
+            // Kiểm tra va chạm để hợp nhất 2 quả cùng cấp
             for (let i = 0; i < circles.length; i++) {
                 for (let j = i + 1; j < circles.length; j++) {
                     let c1 = circles[i];
@@ -124,7 +135,6 @@
                         if (newLevel < FRUITS.length) {
                             c1.radius = FRUITS[newLevel].radius;
                             c1.level = newLevel;
-                            c1.color = FRUITS[newLevel].color;
                             score += (newLevel * 10);
                             scoreEl.innerText = score;
                             circles.splice(j, 1);
@@ -142,33 +152,58 @@
             ctx.strokeStyle = "#ff4d4d";
             ctx.setLineDash([4, 4]);
             ctx.beginPath();
-            ctx.moveTo(0, 80);
-            ctx.lineTo(WIDTH, 80);
+            ctx.moveTo(0, 70);
+            ctx.lineTo(WIDTH, 70);
             ctx.stroke();
             ctx.setLineDash([]);
 
-            // Vẽ các quả đã thả
+            // Vẽ các quả đã thả (dạng ảnh tròn)
             for (let c of circles) {
+                ctx.save();
                 ctx.beginPath();
                 ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2);
-                ctx.fillStyle = c.color;
-                ctx.fill();
-                ctx.strokeStyle = "#333";
+                ctx.clip();
+                
+                let img = loadedImages[c.level];
+                if (img && img.complete && img.naturalWidth !== 0) {
+                    ctx.drawImage(img, c.x - c.radius, c.y - c.radius, c.radius * 2, c.radius * 2);
+                } else {
+                    ctx.fillStyle = "#ddd";
+                    ctx.fill();
+                }
+                
+                ctx.restore();
+
+                // Viền ngoài cho đẹp
+                ctx.beginPath();
+                ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = "#fff";
                 ctx.lineWidth = 2;
                 ctx.stroke();
-                ctx.closePath();
             }
 
-            // Vẽ quả đang chuẩn bị thả ở trên cùng
+            // Vẽ quả đang chuẩn bị thả
             if (currentFruit && !currentFruit.isDropped) {
+                ctx.save();
                 ctx.beginPath();
                 ctx.arc(currentFruit.x, currentFruit.y, currentFruit.radius, 0, Math.PI * 2);
-                ctx.fillStyle = currentFruit.color;
-                ctx.fill();
+                ctx.clip();
+
+                let img = loadedImages[currentFruit.level];
+                if (img && img.complete && img.naturalWidth !== 0) {
+                    ctx.drawImage(img, currentFruit.x - currentFruit.radius, currentFruit.y - currentFruit.radius, currentFruit.radius * 2, currentFruit.radius * 2);
+                } else {
+                    ctx.fillStyle = "#ddd";
+                    ctx.fill();
+                }
+
+                ctx.restore();
+
+                ctx.beginPath();
+                ctx.arc(currentFruit.x, currentFruit.y, currentFruit.radius, 0, Math.PI * 2);
                 ctx.strokeStyle = "#333";
                 ctx.lineWidth = 2;
                 ctx.stroke();
-                ctx.closePath();
             }
         }
 
