@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>2048 Idol Edition</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #faf8ef;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 { color: #776e65; margin-bottom: 5px; }
+        .score-container {
+            background: #bbada0;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: inline-block;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .grid {
+            width: 400px;
+            height: 400px;
+            background: #bbada0;
+            border-radius: 6px;
+            margin: 0 auto;
+            padding: 15px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 15px;
+            box-sizing: border-box;
+        }
+        .cell {
+            background: rgba(238, 228, 218, 0.35);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #776e65;
+            position: relative;
+            overflow: hidden;
+        }
+        .cell img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 3px;
+        }
+        .instructions {
+            margin-top: 20px;
+            color: #776e65;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>2048: Phiên bản Idol</h1>
+    <div class="score-container">Điểm: <span id="score">0</span></div>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="instructions">
+        Dùng các phím mũi tên trên bàn phím để di chuyển các ô. Ghép các hình giống nhau để nâng cấp lên hình tiếp theo!
+    </div>
+
+    <script>
+        const gridDisplay = document.getElementById('grid');
+        const scoreDisplay = document.getElementById('score');
+        let squares = [];
+        let score = 0;
+
+        // Danh sách ánh xạ giá trị số sang file ảnh tương ứng
+        const idolImages = {
+            2: '2.jpg',
+            4: '4.jpg',
+            8: '8.jpg',
+            16: '16.jpg',
+            32: '32.jpg',
+            64: '64.jpg',
+            128: '128.jpg',
+            256: '256.jpg',
+            512: '512.jpg',
+            1024: '1024.jpg',
+            2048: '2048.jpg'
+        };
+
+        function createBoard() {
+            for (let i = 0; i < 16; i++) {
+                let square = document.createElement('div');
+                square.classList.add('cell');
+                square.innerHTML = '';
+                gridDisplay.appendChild(square);
+                squares.push(square);
+            }
+            generate();
+            generate();
+            updateBoard();
+        }
+
+        function generate() {
+            let emptySquares = squares.filter(sq => sq.dataset.value == undefined || sq.dataset.value == 0);
+            if (emptySquares.length > 0) {
+                let randomSquare = emptySquares[Math.floor(Math.random() * emptySquares.length)];
+                randomSquare.dataset.value = Math.random() > 0.1 ? 2 : 4;
+                updateBoard();
+            }
+        }
+
+        function updateBoard() {
+            squares.forEach(sq => {
+                let val = sq.dataset.value;
+                sq.innerHTML = '';
+                if (val && val > 0) {
+                    if (idolImages[val]) {
+                        // Hiển thị ảnh idol nếu có định nghĩa
+                        let img = document.createElement('img');
+                        img.src = idolImages[val];
+                        sq.appendChild(img);
+                    } else {
+                        // Hiển thị số dự phòng nếu vượt quá 2048
+                        sq.innerHTML = val;
+                    }
+                }
+            });
+            scoreDisplay.innerHTML = score;
+        }
+
+        // Các hàm logic di chuyển cơ bản của game 2048
+        function slide(row) {
+            let arr = row.filter(val => val);
+            let missing = 4 - arr.length;
+            let zeros = Array(missing).fill(0);
+            return arr.concat(zeros);
+        }
+
+        function combine(row) {
+            for (let i = 0; i < 3; i++) {
+                if (row[i] === row[i + 1] && row[i] !== 0) {
+                    row[i] *= 2;
+                    score += row[i];
+                    row[i + 1] = 0;
+                }
+            }
+            return row;
+        }
+
+        function moveLeft() {
+            let changed = false;
+            for (let i = 0; i < 16; i += 4) {
+                let row = [
+                    parseInt(squares[i].dataset.value) || 0,
+                    parseInt(squares[i+1].dataset.value) || 0,
+                    parseInt(squares[i+2].dataset.value) || 0,
+                    parseInt(squares[i+3].dataset.value) || 0
+                ];
+                let originalRow = [...row];
+                let slidRow = slide(row);
+                let combinedRow = combine(slidRow);
+                let finalRow = slide(combinedRow);
+
+                for (let j = 0; j < 4; j++) {
+                    if (finalRow[j] !== 0) {
+                        squares[i + j].dataset.value = finalRow[j];
+                    } else {
+                        delete squares[i + j].dataset.value;
+                    }
+                    if (finalRow[j] !== originalRow[j]) changed = true;
+                }
+            }
+            if (changed) {
+                generate();
+            }
+        }
+
+        function moveRight() {
+            let changed = false;
+            for (let i = 0; i < 16; i += 4) {
+                let row = [
+                    parseInt(squares[i].dataset.value) || 0,
+                    parseInt(squares[i+1].dataset.value) || 0,
+                    parseInt(squares[i+2].dataset.value) || 0,
+                    parseInt(squares[i+3].dataset.value) || 0
+                ];
+                let originalRow = [...row];
+                let reversedRow = row.reverse();
+                let slidRow = slide(reversedRow);
+                let combinedRow = combine(slidRow);
+                let finalRow = slide(combinedRow).reverse();
+
+                for (let j = 0; j < 4; j++) {
+                    if (finalRow[j] !== 0) {
+                        squares[i + j].dataset.value = finalRow[j];
+                    } else {
+                        delete squares[i + j].dataset.value;
+                    }
+                    if (finalRow[j] !== originalRow[j]) changed = true;
+                }
+            }
+            if (changed) {
+                generate();
+            }
+        }
+
+        function moveUp() {
+            let changed = false;
+            for (let i = 0; i < 4; i++) {
+                let col = [
+                    parseInt(squares[i].dataset.value) || 0,
+                    parseInt(squares[i+4].dataset.value) || 0,
+                    parseInt(squares[i+8].dataset.value) || 0,
+                    parseInt(squares[i+12].dataset.value) || 0
+                ];
+                let originalCol = [...col];
+                let slidCol = slide(col);
+                let combinedCol = combine(slidCol);
+                let finalCol = slide(combinedCol);
+
+                for (let j = 0; j < 4; j++) {
+                    let idx = i + j * 4;
+                    if (finalCol[j] !== 0) {
+                        squares[idx].dataset.value = finalCol[j];
+                    } else {
+                        delete squares[idx].dataset.value;
+                    }
+                    if (finalCol[j] !== originalCol[j]) changed = true;
+                }
+            }
+            if (changed) {
+                generate();
+            }
+        }
+
+        function moveDown() {
+            let changed = false;
+            for (let i = 0; i < 4; i++) {
+                let col = [
+                    parseInt(squares[i].dataset.value) || 0,
+                    parseInt(squares[i+4].dataset.value) || 0,
+                    parseInt(squares[i+8].dataset.value) || 0,
+                    parseInt(squares[i+12].dataset.value) || 0
+                ];
+                let originalCol = [...col];
+                let reversedCol = col.reverse();
+                let slidCol = slide(reversedCol);
+                let combinedCol = combine(slidCol);
+                let finalCol = slide(combinedCol).reverse();
+
+                for (let j = 0; j < 4; j++) {
+                    let idx = i + j * 4;
+                    if (finalCol[j] !== 0) {
+                        squares[idx].dataset.value = finalCol[j];
+                    } else {
+                        delete squares[idx].dataset.value;
+                    }
+                    if (finalCol[j] !== originalCol[j]) changed = true;
+                }
+            }
+            if (changed) {
+                generate();
+            }
+        }
+
+        // Lắng nghe phím bấm
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                moveLeft();
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                moveRight();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                moveUp();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                moveDown();
+            }
+        });
+
+        createBoard();
+    </script>
+</body>
+</html>
